@@ -1,7 +1,8 @@
 package ru.yandex.practicum.model;
 
-import lombok.Data;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -10,9 +11,11 @@ import java.time.LocalDate;
 
 @Slf4j
 @Data
+@AllArgsConstructor
 public class User {
 
-    private int id;
+    @Nullable
+    private Integer id;
     @Email
     private String email;
     @NotBlank
@@ -21,10 +24,4 @@ public class User {
     @Past
     private LocalDate birthday;
 
-    public User(String email, String login, String name, LocalDate birthday) {
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
-    }
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.controller;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.exception.ValidationException;
@@ -14,18 +13,16 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
     private int idUser = 1;
 
-    private final Map<Integer, User> users = new HashMap();
+    private final Map<Integer, User> users = new HashMap<>();
 
     public void clean(){
         this.users.clear();
         this.idUser = 1;
     }
-
     @PostMapping
     public User create(@Valid @RequestBody User user) throws ValidationException {
         log.debug("POST /users создание пользователя");

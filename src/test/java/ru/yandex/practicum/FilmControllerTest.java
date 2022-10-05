@@ -9,9 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.controller.FilmController;
-import ru.yandex.practicum.controller.UserController;
 import ru.yandex.practicum.model.Film;
-import ru.yandex.practicum.model.User;
 import java.time.LocalDate;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -20,12 +18,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class FilmorateApplicationTest {
+class FilmControllerTest {
 
     @Autowired
     private FilmController filmController;
-    @Autowired
-    private UserController userController;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -34,7 +30,6 @@ class FilmorateApplicationTest {
     @AfterEach
     public void afterEach() {
         filmController.clean();
-        userController.clean();
     }
 
     @Test
@@ -50,7 +45,7 @@ class FilmorateApplicationTest {
     }
 
     @Test
-    void putValidFilmTest() throws Exception {
+    void putValidUpdateNameFilmTest() throws Exception {
         Film film = new Film("Кин-дза-дза!"
                 , "советская двухсерийная трагикомедия в жанре фантастической антиутопии"
                 , LocalDate.of(1986, 12, 1), 8);
@@ -132,115 +127,6 @@ class FilmorateApplicationTest {
                         .content(body)
                         .contentType("application/json"))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void postValidUserTest() throws Exception {
-        User user = new User("niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
-                , LocalDate.of(1922, 12, 1));
-        String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void putValidUserTest() throws Exception {
-        User user = new User("niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
-                , LocalDate.of(1922, 12, 1));
-        String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-
-        User userUpdate = new User("niktoneponyal@gmail.com"
-                , "anigilyator2000", "Vialeta"
-                , LocalDate.of(1922, 12, 1));
-        userUpdate.setId(1);
-        body = objectMapper.writeValueAsString(userUpdate);
-        this.mockMvc.perform(put("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getValidUserTest() throws Exception {
-        User user = new User("niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
-                , LocalDate.of(1922, 12, 1));
-        String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-
-        User userSec = new User("niktoneponyal@gmail.com"
-                , "anigilyator2000", "Vi"
-                , LocalDate.of(2000, 12, 1));
-        body = objectMapper.writeValueAsString(userSec);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-
-        this.mockMvc.perform(get("/users"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].login").value("pkingsbl"))
-                .andExpect(jsonPath("$[1].login").value("anigilyator2000"));
-    }
-
-    @Test
-    void postUserWithoutLoginTest() throws Exception {
-        User user = new User("niktoneponyal@gmail.com"
-                , " ", "Vialeta"
-                , LocalDate.of(1922, 12, 1));
-        String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void postUserInvalidDateTest() throws Exception {
-        User user = new User("niktoniktoneponyal@gmail.comneponyal"
-                , "pkingsbl", "Vialeta"
-                , LocalDate.of(2222, 12, 1));
-        String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void postUserInvalidEmailTest() throws Exception {
-        User user = new User("niktoneponyal"
-                , "pkingsbl", "Vialeta"
-                , LocalDate.of(1922, 12, 1));
-        String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void postValidUserWithoutNameTest() throws Exception {
-        User user = new User("niktoneponyal@gmail.com"
-                , "pkingsbl", ""
-                , LocalDate.of(1922, 12, 1));
-        String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("pkingsbl"));
     }
 
 }
