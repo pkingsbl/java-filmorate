@@ -14,6 +14,7 @@ import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.model.User;
 import java.time.LocalDate;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,6 +68,20 @@ class FilmorateApplicationTest {
                         .content(body)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void putNotFoundFilmTest() throws Exception {
+        Film film = new Film("Ку! Кин-дза-дза!"
+                , "советская двухсерийная трагикомедия в жанре фантастической антиутопии"
+                , LocalDate.of(1986, 12, 1), 8);
+        film.setId(2);
+        String body = objectMapper.writeValueAsString(film);
+        this.mockMvc.perform(put("/films")
+                        .content(body)
+                        .contentType("application/json"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -215,17 +230,17 @@ class FilmorateApplicationTest {
                 .andExpect(status().isBadRequest());
     }
 
-//    @Test
-//    void postValidUserWithoutNameTest() throws Exception {
-//        User user = new User("niktoneponyal@gmail.com"
-//                , "pkingsbl", " "
-//                , LocalDate.of(1922, 12, 1));
-//        String body = objectMapper.writeValueAsString(user);
-//        this.mockMvc.perform(post("/users")
-//                        .content(body)
-//                        .contentType("application/json"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.name").value("pkingsbl"));
-//    }
+    @Test
+    void postValidUserWithoutNameTest() throws Exception {
+        User user = new User("niktoneponyal@gmail.com"
+                , "pkingsbl", ""
+                , LocalDate.of(1922, 12, 1));
+        String body = objectMapper.writeValueAsString(user);
+        this.mockMvc.perform(post("/users")
+                        .content(body)
+                        .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("pkingsbl"));
+    }
 
 }
