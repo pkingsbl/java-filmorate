@@ -1,4 +1,4 @@
-package ru.yandex.practicum;
+package ru.yandex.filmorate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bytebuddy.utility.RandomString;
@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.controller.FilmController;
-import ru.yandex.practicum.model.Film;
+import ru.yandex.filmorate.controller.FilmController;
+import ru.yandex.filmorate.model.Film;
+import ru.yandex.filmorate.storage.FilmStorage;
+
 import java.time.LocalDate;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -23,13 +25,15 @@ class FilmControllerTest {
     @Autowired
     private FilmController filmController;
     @Autowired
+    private FilmStorage filmStorage;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
 
     @AfterEach
     public void afterEach() {
-        filmController.clean();
+        filmStorage.clean();
     }
 
     @Test
@@ -50,6 +54,7 @@ class FilmControllerTest {
                 , "советская двухсерийная трагикомедия в жанре фантастической антиутопии"
                 , LocalDate.of(1986, 12, 1), 8);
         String body = objectMapper.writeValueAsString(film);
+        System.out.println(body);
         this.mockMvc.perform(post("/films")
                         .content(body)
                         .contentType("application/json"))
@@ -57,8 +62,10 @@ class FilmControllerTest {
         Film filmUpdate = new Film("Ку! Кин-дза-дза!"
                 , "советская двухсерийная трагикомедия в жанре фантастической антиутопии"
                 , LocalDate.of(1986, 12, 1), 8);
-        filmUpdate.setId(1);
+        filmUpdate.setId(1L);
         body = objectMapper.writeValueAsString(filmUpdate);
+        System.out.println(body);
+
         this.mockMvc.perform(put("/films")
                         .content(body)
                         .contentType("application/json"))
@@ -70,7 +77,7 @@ class FilmControllerTest {
         Film film = new Film("Ку! Кин-дза-дза!"
                 , "советская двухсерийная трагикомедия в жанре фантастической антиутопии"
                 , LocalDate.of(1986, 12, 1), 8);
-        film.setId(2);
+        film.setId(2L);
         String body = objectMapper.writeValueAsString(film);
         this.mockMvc.perform(put("/films")
                         .content(body)
@@ -126,6 +133,18 @@ class FilmControllerTest {
         this.mockMvc.perform(post("/films")
                         .content(body)
                         .contentType("application/json"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getNegativeFilmTest() throws Exception {
+        this.mockMvc.perform(get("/films/-1"))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void putDeleteNegativeFilmTest() throws Exception {
+        this.mockMvc.perform(delete("/films/-1"))
+                .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 

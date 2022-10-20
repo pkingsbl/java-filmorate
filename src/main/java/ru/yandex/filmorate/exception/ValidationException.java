@@ -1,9 +1,9 @@
-package ru.yandex.practicum.exception;
+package ru.yandex.filmorate.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+//@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class ValidationException extends RuntimeException {
     public ValidationException(String s) {
         super(s);
