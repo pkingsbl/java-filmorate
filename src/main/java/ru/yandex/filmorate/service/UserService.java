@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.filmorate.exception.NotFoundException;
+import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.User;
 import ru.yandex.filmorate.storage.UserStorage;
 
@@ -19,12 +20,15 @@ public class UserService {
     private UserStorage userStorage;
 
     public User addFriend(Long firstId, Long secondId) {
+        if (firstId.longValue() == secondId.longValue()) {
+            throw new ValidationException("Id пользователей совпадает");
+        }
         if (userStorage.getUsers().containsKey(firstId) && userStorage.getUsers().containsKey(secondId)) {
 
             userStorage.getUsers().get(firstId).getFriends().add(secondId);
             userStorage.getUsers().get(secondId).getFriends().add(firstId);
-            log.info("Пользователи " + userStorage.getUsers().get(firstId).getName() + " и "
-                    + userStorage.getUsers().get(secondId).getName() + " друзьяшки на веки");
+            log.info("Пользователи " + userStorage.getUsers().get(firstId).getLogin() + " и "
+                    + userStorage.getUsers().get(secondId).getLogin() + " друзьяшки на веки");
 
             return userStorage.getUsers().get(secondId);
         } else {
@@ -33,12 +37,15 @@ public class UserService {
     }
 
     public User deleteFriend(Long firstId, Long secondId) {
+        if (firstId.longValue() == secondId.longValue()) {
+            throw new ValidationException("Id пользователей совпадает");
+        }
         if (userStorage.getUsers().containsKey(firstId) && userStorage.getUsers().containsKey(secondId)) {
 
             userStorage.getUsers().get(firstId).getFriends().remove(secondId);
             userStorage.getUsers().get(secondId).getFriends().remove(firstId);
-            log.info("Пользователи " + userStorage.getUsers().get(firstId).getName() + " и "
-                    + userStorage.getUsers().get(secondId).getName() + " больше не друзьяшки");
+            log.info("Пользователи " + userStorage.getUsers().get(firstId).getLogin() + " и "
+                    + userStorage.getUsers().get(secondId).getLogin() + " больше не друзьяшки");
 
             return userStorage.getUsers().get(secondId);
         } else {
@@ -47,6 +54,9 @@ public class UserService {
     }
 
     public List<User> getMutualFriends(Long firstId, Long secondId) {
+        if (firstId.longValue() == secondId.longValue()) {
+            throw new ValidationException("Id пользователей совпадает");
+        }
         if (userStorage.getUsers().containsKey(firstId) && userStorage.getUsers().containsKey(secondId)) {
 
             Set<Long> friends = userStorage.getUsers().get(firstId).getFriends();

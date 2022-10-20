@@ -51,7 +51,7 @@ class FilmServiceTest {
                 .andExpect(status().isOk());
         User user = new User(null,"niktoneponyal@gmail.com"
                 , "pkingsbl", "Vialeta"
-                , LocalDate.of(1922, 12, 1), null);
+                , LocalDate.of(1922, 12, 1));
         body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
                         .content(body)
@@ -75,7 +75,7 @@ class FilmServiceTest {
                 .andExpect(status().isOk());
         User user = new User(null,"niktoneponyal@gmail.com"
                 , "pkingsbl", "Vialeta"
-                , LocalDate.of(1922, 12, 1), null);
+                , LocalDate.of(1922, 12, 1));
         body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
                         .content(body)
@@ -95,7 +95,7 @@ class FilmServiceTest {
         for (int i = 1; i < 21; i++) {
             User user = new User(null,"bot@gmail.com"
                     , ("ya_tochno_ne_bot-" + i), "Fialeta"
-                    , LocalDate.of((1922 + i), 12, 1), null);
+                    , LocalDate.of((1922 + i), 12, 1));
             String body = objectMapper.writeValueAsString(user);
             this.mockMvc.perform(post("/users")
                             .content(body)
