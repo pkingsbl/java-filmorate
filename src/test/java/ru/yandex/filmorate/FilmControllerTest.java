@@ -137,6 +137,12 @@ class FilmControllerTest {
     }
 
     @Test
+    void getUnknownFilmTest() throws Exception {
+        this.mockMvc.perform(get("/films/999"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void getNegativeFilmTest() throws Exception {
         this.mockMvc.perform(get("/films/-1"))
                 .andExpect(status().isBadRequest());

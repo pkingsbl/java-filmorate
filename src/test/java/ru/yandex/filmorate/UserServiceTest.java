@@ -59,6 +59,12 @@ class UserServiceTest {
 
         this.mockMvc.perform(put("/users/1/friends/2"))
                 .andExpect(status().isOk());
+        this.mockMvc.perform(get("/users/1"))
+                .andDo(print())
+                .andExpect(status().isOk());
+        this.mockMvc.perform(get("/users/2"))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -205,6 +211,12 @@ class UserServiceTest {
     void getUserByNegativeIdTest() throws Exception {
         this.mockMvc.perform(get("/users/-1"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getUserByUnknownIdTest() throws Exception {
+        this.mockMvc.perform(get("/users/999"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

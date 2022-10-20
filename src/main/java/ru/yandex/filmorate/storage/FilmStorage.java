@@ -15,4 +15,6 @@ public interface FilmStorage {
     Map<Long, Film> getFilms();
 
     void clean();
+
+    Film getFilm(Long id);
 }

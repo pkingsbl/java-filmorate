@@ -29,6 +29,14 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     @Override
+    public Film getFilm(Long id) {
+        if (!films.containsKey(id)) {
+            throw new NotFoundException("Фильм с id = " + id + " не найден!");
+        }
+        return films.get(id);
+    }
+
+    @Override
     public Film addFilm(Film film) {
         log.debug("Добавление фильма");
         checkReleaseDate(film.getReleaseDate());

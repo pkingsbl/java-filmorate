@@ -8,6 +8,7 @@ import java.util.Map;
 public interface UserStorage {
 
     User addUser(User user);
+    User getUser(Long id);
     User deleteUser(Long id);
     User updateUser(User user) throws IOException;
     Map<Long, User> getUsers();

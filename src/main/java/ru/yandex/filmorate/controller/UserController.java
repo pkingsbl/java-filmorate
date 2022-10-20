@@ -39,7 +39,7 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public User addFriend(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id
-            , @PathVariable @Min(value = 1, message = "id должен быть больше 0") Long friendId) {
+            , @PathVariable Long friendId) {
         return userService.addFriend(id, friendId);
     }
 
@@ -62,7 +62,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
-        return userStorage.getUsers().get(id);
+        return userStorage.getUser(id);
     }
 
     @GetMapping("/{id}/friends")
