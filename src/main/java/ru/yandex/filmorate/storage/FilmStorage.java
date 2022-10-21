@@ -1,7 +1,6 @@
 package ru.yandex.filmorate.storage;
 
 import ru.yandex.filmorate.model.Film;
-
 import java.util.Map;
 
 public interface FilmStorage {

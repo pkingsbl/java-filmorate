@@ -11,6 +11,7 @@ import ru.yandex.filmorate.service.FilmService;
 import ru.yandex.filmorate.storage.FilmStorage;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,18 +45,18 @@ public class FilmController {
     @GetMapping
     public Collection<Film> findAll() {
         log.info("Текущее количество фильмов: {}", filmStorage.getFilms().size());
-        return filmStorage.getFilms().values();
+        return new ArrayList<>(filmStorage.getFilms().values());
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
-        return filmStorage.getFilm(id);
+        return (filmStorage.getFilm(id));
     }
 
     @GetMapping("/popular")
     public List<Film> showMostPopularFilms(@RequestParam(defaultValue = "10") @Min(value = 1
             , message = "параметр count должен быть больше 0") Integer count) {
-        return filmService.getPopularFilms(count);
+        return new ArrayList<>(filmService.getPopularFilms(count));
     }
 
     @DeleteMapping("/{id}")

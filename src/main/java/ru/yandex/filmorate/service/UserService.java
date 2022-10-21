@@ -7,8 +7,8 @@ import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.User;
 import ru.yandex.filmorate.storage.UserStorage;
-
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -58,10 +58,8 @@ public class UserService {
             throw new ValidationException("Id пользователей совпадает");
         }
         if (userStorage.getUsers().containsKey(firstId) && userStorage.getUsers().containsKey(secondId)) {
-
-            Set<Long> friends = userStorage.getUsers().get(firstId).getFriends();
+            Set<Long> friends = new HashSet<>(userStorage.getUsers().get(firstId).getFriends());
             friends.retainAll(userStorage.getUsers().get(secondId).getFriends());
-
             List<User> mutualFriends = findFriends(friends);
             log.info("Количестко общих друзей: " + mutualFriends.size());
             return mutualFriends;

@@ -1,6 +1,5 @@
 package ru.yandex.filmorate.model;
 import lombok.Data;
-import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.*;

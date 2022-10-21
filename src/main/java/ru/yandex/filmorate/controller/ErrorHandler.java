@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.filmorate.exception.ErrorResponse;
 import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
-
 import javax.validation.ConstraintViolationException;
 
 @Slf4j

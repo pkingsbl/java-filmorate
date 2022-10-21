@@ -2,8 +2,6 @@ package ru.yandex.filmorate.model;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.Nullable;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;

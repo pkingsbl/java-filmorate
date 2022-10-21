@@ -12,6 +12,7 @@ import ru.yandex.filmorate.storage.UserStorage;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class UserController {
     @GetMapping
     public Collection<User> findAll() {
         log.info("Текущее количество пользователей: {}", userStorage.getUsers().size());
-        return userStorage.getUsers().values();
+        return new ArrayList<>(userStorage.getUsers().values());
     }
 
     @GetMapping("/{id}")
@@ -67,13 +68,13 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public List<User> getUserFriends(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
-        return userService.findFriends(userStorage.getUsers().get(id).getFriends());
+        return new ArrayList<>(userService.findFriends(userStorage.getUsers().get(id).getFriends()));
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> findCommonFriends(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id
             , @PathVariable @Min(value = 1, message = "user id должен быть больше 0") Long otherId)  {
-        return userService.getMutualFriends(id, otherId);
+        return new ArrayList<>(userService.getMutualFriends(id, otherId));
     }
 
 }

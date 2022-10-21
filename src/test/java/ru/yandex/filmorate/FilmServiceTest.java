@@ -1,7 +1,6 @@
 package ru.yandex.filmorate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +11,10 @@ import ru.yandex.filmorate.controller.FilmController;
 import ru.yandex.filmorate.model.Film;
 import ru.yandex.filmorate.model.User;
 import ru.yandex.filmorate.storage.FilmStorage;
-
 import java.time.LocalDate;
 import java.util.Random;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest

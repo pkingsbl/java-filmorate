@@ -1,7 +1,6 @@
 package ru.yandex.filmorate.storage;
 
 import ru.yandex.filmorate.model.User;
-
 import java.io.IOException;
 import java.util.Map;
 

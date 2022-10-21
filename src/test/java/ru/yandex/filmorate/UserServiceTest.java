@@ -231,4 +231,66 @@ class UserServiceTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void putGetFriendsTest() throws Exception {
+        User user = new User(null, "niktoneponyal@gmail.com"
+                , "pkingsbl", "Vialeta"
+                , LocalDate.of(1922, 12, 1));
+        String body = objectMapper.writeValueAsString(user);
+        this.mockMvc.perform(post("/users")
+                        .content(body)
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+        User userFriend = new User(null, "niktoneponyal@gmail.com"
+                , "anigilyator2000", "Vialeta"
+                , LocalDate.of(1922, 12, 1));
+        body = objectMapper.writeValueAsString(userFriend);
+        this.mockMvc.perform(post("/users")
+                        .content(body)
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+        User userSecondFriend = new User(null, "niktoneponyal@gmail.com"
+                , "anigilyator2000", "Vialeta"
+                , LocalDate.of(1922, 12, 1));
+        body = objectMapper.writeValueAsString(userSecondFriend);
+        this.mockMvc.perform(post("/users")
+                        .content(body)
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get("/users/1/friends/common/2"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(put("/users/1/friends/2"))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(put("/users/1/friends/-1"))
+                .andExpect(status().isNotFound());
+
+        this.mockMvc.perform(get("/users/1/friends"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get("/users/2/friends"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get("/users/1/friends/common/2"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(put("/users/1/friends/3"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get("/users/1/friends"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get("/users/1"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }

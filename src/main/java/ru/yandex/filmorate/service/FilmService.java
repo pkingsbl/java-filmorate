@@ -7,7 +7,6 @@ import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.model.Film;
 import ru.yandex.filmorate.storage.FilmStorage;
 import ru.yandex.filmorate.storage.UserStorage;
-
 import javax.validation.constraints.Positive;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
 
-    private static final int TOP_FILMS = 10;
     @Autowired
     private FilmStorage filmStorage;
     @Autowired
@@ -24,7 +22,7 @@ public class FilmService {
 
     public Film addLike(Long userId, Long filmId) {
         if (filmStorage.getFilms().containsKey(filmId) && userStorage.getUsers().containsKey(userId)) {
-            filmStorage.getFilms().get(filmId).getLikes().add(Long.valueOf(userId));
+            filmStorage.getFilms().get(filmId).getLikes().add(userId);
             log.info("Пользователь " + userStorage.getUsers().get(userId).getLogin()
                     + " поставил лайк " + filmStorage.getFilms().get(filmId).getName());
             return filmStorage.getFilms().get(filmId);
