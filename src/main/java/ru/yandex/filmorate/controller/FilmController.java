@@ -50,7 +50,7 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
-        return (filmStorage.getFilm(id));
+        return filmStorage.getFilm(id);
     }
 
     @GetMapping("/popular")
@@ -65,8 +65,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id
-            , @PathVariable Long userId) {
+    public Film deleteLike(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id,
+            @PathVariable Long userId) {
         return filmService.deleteLike(userId, id);
     }
 
