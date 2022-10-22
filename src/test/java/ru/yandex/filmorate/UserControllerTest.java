@@ -1,4 +1,4 @@
-package ru.yandex.practicum;
+package ru.yandex.filmorate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.controller.UserController;
-import ru.yandex.practicum.model.User;
+import ru.yandex.filmorate.controller.UserController;
+import ru.yandex.filmorate.model.User;
+import ru.yandex.filmorate.storage.UserStorage;
+
 import java.time.LocalDate;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,13 +23,15 @@ class UserControllerTest {
     @Autowired
     private UserController userController;
     @Autowired
+    private UserStorage userStorage;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
 
     @AfterEach
     public void afterEach() {
-        userController.clean();
+        userStorage.clean();
     }
 
     @Test
@@ -43,7 +47,7 @@ class UserControllerTest {
     }
 
     @Test
-    void putValidUserTest() throws Exception {
+    void putValidUpdateUserTest() throws Exception {
         User user = new User(null, "niktoneponyal@gmail.com"
                 , "pkingsbl", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
@@ -53,10 +57,9 @@ class UserControllerTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
 
-        User userUpdate = new User(null, "niktoneponyal@gmail.com"
+        User userUpdate = new User(1L, "niktoneponyal@gmail.com"
                 , "anigilyator2000", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
-        userUpdate.setId(1);
         body = objectMapper.writeValueAsString(userUpdate);
         this.mockMvc.perform(put("/users")
                         .content(body)
