@@ -2,6 +2,7 @@ package ru.yandex.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.filmorate.exception.NotFoundException;
@@ -14,6 +15,7 @@ import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Validated
@@ -21,6 +23,7 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
+    @Qualifier("FilmDbStorage")
     @Autowired
     private FilmStorage filmStorage;
     @Autowired
@@ -49,7 +52,7 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
+    public Optional<Film> getFilmById(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
         return filmStorage.getFilm(id);
     }
 
@@ -60,8 +63,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}")
-    public Film deleteFilm(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
-        return filmStorage.deleteFilm(id);
+    public void deleteFilm(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
+        filmStorage.deleteFilm(id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")

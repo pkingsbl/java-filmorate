@@ -7,6 +7,7 @@ import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.User;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -20,11 +21,11 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User getUser(Long id) {
+    public Optional<User> getUser(Long id) {
         if (!users.containsKey(id)) {
             throw new NotFoundException("Пользователь с id = " + id + " не найден!");
         }
-        return users.get(id);
+        return Optional.ofNullable(users.get(id));
     }
 
     @Override

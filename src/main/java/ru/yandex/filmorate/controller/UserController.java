@@ -3,6 +3,7 @@ package ru.yandex.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.filmorate.exception.ValidationException;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Validated
@@ -23,6 +25,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
+    @Qualifier("inMemoryUserStorage")
     @Autowired
     private UserStorage userStorage;
     @Autowired
@@ -62,7 +65,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
+    public Optional<User> getUserById(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
         return userStorage.getUser(id);
     }
 

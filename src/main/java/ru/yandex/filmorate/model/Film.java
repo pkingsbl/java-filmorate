@@ -1,10 +1,13 @@
 package ru.yandex.filmorate.model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -21,5 +24,9 @@ public class Film {
     @Positive
     private final int duration;
     private Set<Long> likes = new HashSet<>();
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    @JsonProperty("mpa")
+    private Mpa mpa;
+    private List<Genre> genres;
 
 }
