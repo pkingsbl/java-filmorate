@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.Film;
+import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -24,12 +24,6 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     public Map<Long, Film> getFilms() {
         return films;
-    }
-
-    @Override
-    public void clean() {
-        films.clear();
-        idFilm = 1L;
     }
 
     @Override
@@ -50,7 +44,6 @@ public class InMemoryFilmStorage implements FilmStorage{
             throw new NotFoundException("Пользователь или фильм не найдены");
         }
     }
-
 
     @Override
     public void deleteLikeFilm(Long userId, Long filmId) {

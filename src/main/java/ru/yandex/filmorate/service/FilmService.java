@@ -10,7 +10,6 @@ import ru.yandex.filmorate.storage.FilmStorage;
 import ru.yandex.filmorate.storage.UserStorage;
 import javax.validation.constraints.Positive;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,7 +22,7 @@ public class FilmService {
     @Autowired
     private UserStorage userStorage;
 
-    public Film addLike(Long userId, Long filmId) {
+    public Film addLike(Long filmId, Long userId) {
         if (filmStorage.getFilms().containsKey(filmId) && userStorage.getUsers().containsKey(userId)) {
             filmStorage.addLikeFilm(filmId, userId);
             log.info("Пользователь id = " + userId

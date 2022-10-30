@@ -31,6 +31,9 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
+        if (film.getMpa() == null) {
+            throw new ValidationException("MPA не должен быть null");
+        }
         return filmStorage.addFilm(film);
     }
 
@@ -42,7 +45,7 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id
             , @PathVariable @Min(value = 1, message = "user id должен быть больше 0") Long userId) {
-        return filmService.addLike(userId, id);
+        return filmService.addLike(id, userId);
     }
 
     @GetMapping

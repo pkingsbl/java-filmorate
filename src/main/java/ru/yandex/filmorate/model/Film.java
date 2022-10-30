@@ -1,14 +1,13 @@
 package ru.yandex.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-
 import javax.validation.constraints.*;
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.Data;
 
 @Slf4j
 @Data

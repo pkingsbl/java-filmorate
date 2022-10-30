@@ -1,16 +1,18 @@
 package ru.yandex.filmorate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.filmorate.controller.FilmController;
 import ru.yandex.filmorate.model.Film;
+import ru.yandex.filmorate.model.Mpa;
 import ru.yandex.filmorate.model.User;
-import ru.yandex.filmorate.storage.FilmStorage;
+import ru.yandex.filmorate.storage.FilmDbStorage;
 import java.time.LocalDate;
 import java.util.Random;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -19,34 +21,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmServiceTest {
 
     @Autowired
     private FilmController filmController;
     @Autowired
-    private FilmStorage filmStorage;
+    private FilmDbStorage filmStorage;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
 
-    @AfterEach
-    public void afterEach() {
-        filmStorage.clean();
-    }
 
     @Test
     void putAddLikeFilmTest() throws Exception {
         Film film = new Film("Кин-дза-дза!"
                 , "советская двухсерийная трагикомедия в жанре фантастической антиутопии"
                 , LocalDate.of(1986, 12, 1), 8);
+        film.setMpa(new Mpa(1, null));
         String body = objectMapper.writeValueAsString(film);
         this.mockMvc.perform(post("/films")
                         .content(body)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         User user = new User(null,"niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
+                , "kingsbl", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
@@ -64,13 +65,14 @@ class FilmServiceTest {
         Film film = new Film("Кин-дза-дза!"
                 , "советская двухсерийная трагикомедия в жанре фантастической антиутопии"
                 , LocalDate.of(1986, 12, 1), 8);
+        film.setMpa(new Mpa(1, null));
         String body = objectMapper.writeValueAsString(film);
         this.mockMvc.perform(post("/films")
                         .content(body)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         User user = new User(null,"niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
+                , "sam", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
@@ -103,6 +105,7 @@ class FilmServiceTest {
             Film film = new Film(("Фиьмс-" + i)
                     , "Это совершенно обыкновенный фильм с купленным рейтингом"
                     , LocalDate.of((2000 + i), 12, 1), 10);
+            film.setMpa(new Mpa(1, null));
             String body = objectMapper.writeValueAsString(film);
             this.mockMvc.perform(post("/films")
                             .content(body)
