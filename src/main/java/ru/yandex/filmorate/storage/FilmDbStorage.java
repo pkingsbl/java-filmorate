@@ -136,7 +136,6 @@ public class FilmDbStorage implements FilmStorage {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql);
         Map<Long, Film> films = getFilmMap(filmRows);
         log.info("Текущее количество фильмов: {}", films.size());
-
         return films;
     }
 

@@ -95,6 +95,7 @@ public class UserDbStorage implements UserStorage {
                     , Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
             users.put(userRows.getLong("id"), user);
         }
+        log.info("Текущее количество пользователей: {}", users.size());
         return users;
     }
 

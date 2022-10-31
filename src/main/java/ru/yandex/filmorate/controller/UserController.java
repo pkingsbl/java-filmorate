@@ -60,7 +60,6 @@ public class UserController {
 
     @GetMapping
     public Collection<User> findAll() {
-        log.info("Текущее количество пользователей: {}", userStorage.getUsers().size());
         return new ArrayList<>(userStorage.getUsers().values());
     }
 
