@@ -32,9 +32,8 @@ public class GenreDbStorage {
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT name FROM genres WHERE id = ?", id);
         if (genreRows.next()) {
             return Optional.of(new Genre(id, genreRows.getString("name")));
-        } else {
-            throw new NotFoundException("Жанр с id = " + id + " не найден!");
         }
+        return Optional.empty();
     }
 
 }
