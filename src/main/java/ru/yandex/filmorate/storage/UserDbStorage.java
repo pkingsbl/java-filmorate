@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.User;
+import ru.yandex.filmorate.storage.rowMapper.UserRowMapper;
+
 import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
@@ -38,23 +40,34 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
+//    @Override
+//    public Optional<User> getUser(Long id) {
+//        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from users where id = ?", id);
+//
+//        if(userRows.next()) {
+//            User user = new User(
+//                    userRows.getLong("id"),
+//                    userRows.getString("email"),
+//                    userRows.getString("login"),
+//                    userRows.getString("name"),
+//                    Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
+//            String sql = "SELECT f.friend_id FROM friends AS f WHERE f.user_id = ? AND f.APPROVE = true";
+//            SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(sql, id);
+//            while (friendsRows.next()) {
+//                user.getFriends().add(friendsRows.getLong("friend_id"));
+//            }
+//            log.info("Найден пользователь: {}", user.getLogin());
+//            return Optional.of(user);
+//        }
+//        return Optional.empty();
+//    }
+
     @Override
     public Optional<User> getUser(Long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from users where id = ?", id);
-
-        if(userRows.next()) {
-            User user = new User(
-                    userRows.getLong("id"),
-                    userRows.getString("email"),
-                    userRows.getString("login"),
-                    userRows.getString("name"),
-                    Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-            String sql = "SELECT f.friend_id FROM friends AS f WHERE f.user_id = ? AND f.APPROVE = true";
-            SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(sql, id);
-            while (friendsRows.next()) {
-                user.getFriends().add(friendsRows.getLong("friend_id"));
-            }
-            log.info("Найден пользователь: {}", user.getLogin());
+        final String query = "select * from users where id = ?";
+        User user = jdbcTemplate.queryForObject(
+                query, new Object[] { id }, new UserRowMapper());
+        if (user != null) {
             return Optional.of(user);
         }
         return Optional.empty();

@@ -12,6 +12,7 @@ import java.util.Set;
 @Slf4j
 @Data
 @AllArgsConstructor
+//@NoArgsConstructor
 public class User {
 
     private Long id;
