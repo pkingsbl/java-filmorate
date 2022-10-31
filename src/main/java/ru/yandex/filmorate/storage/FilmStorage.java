@@ -1,9 +1,8 @@
 package ru.yandex.filmorate.storage;
 
 import ru.yandex.filmorate.model.Film;
-
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface FilmStorage {
@@ -14,7 +13,7 @@ public interface FilmStorage {
 
     void deleteFilm(Long id);
 
-    Collection<Film> getFilms();
+    Map<Long, Film> getFilms();
 
     Optional<Film> getFilm(Long id);
 

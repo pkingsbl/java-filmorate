@@ -50,7 +50,7 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> findAll() {
-        return filmStorage.getFilms();
+        return filmStorage.getFilms().values();
     }
 
     @GetMapping("/{id}")

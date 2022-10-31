@@ -132,9 +132,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getFilms() {
+    public Map<Long, Film> getFilms() {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql);
-        Collection<Film> films = getFilmMap(filmRows).values();
+        Map<Long, Film> films = getFilmMap(filmRows);
         log.info("Текущее количество фильмов: {}", films.size());
 
         return films;
