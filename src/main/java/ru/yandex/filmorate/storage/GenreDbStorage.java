@@ -3,11 +3,9 @@ package ru.yandex.filmorate.storage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.model.Genre;
-import java.util.ArrayList;
+import ru.yandex.filmorate.storage.rowMapper.GenreRowMapper;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -19,21 +17,20 @@ public class GenreDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public Collection<Genre> getGenres() {
-        Collection<Genre> genres = new ArrayList<>();
-        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM genres");
-        while (genreRows.next()) {
-            Genre mpa = new Genre(genreRows.getInt("id"), genreRows.getString("name"));
-            genres.add(mpa);
-        }
+        log.info("Поиск всех жанров");
+        final String query = "SELECT * FROM genres";
+        Collection<Genre> genres = jdbcTemplate.query(
+                query, new GenreRowMapper());
+        log.info("Текущее количество жанров: {}", genres.size());
         return genres;
     }
 
     public Optional<Genre> getGenre(int id) {
-        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT name FROM genres WHERE id = ?", id);
-        if (genreRows.next()) {
-            return Optional.of(new Genre(id, genreRows.getString("name")));
-        }
-        return Optional.empty();
+        log.info("Поиск жанра по id " + id);
+        final String query = "SELECT * FROM genres WHERE id = ?";
+        Genre genre = jdbcTemplate.queryForObject(
+                query, new Object[] { id }, new GenreRowMapper());
+        return genre != null ? Optional.of(genre) : Optional.empty();
     }
 
 }

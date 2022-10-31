@@ -3,10 +3,11 @@ package ru.yandex.filmorate.storage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.filmorate.model.Mpa;
-import java.util.*;
+import ru.yandex.filmorate.storage.rowMapper.MpaRowMapper;
+import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,21 +17,19 @@ public class MpaDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public Collection<Mpa> getMpas() {
-        Collection<Mpa> mpas = new ArrayList<>();
-        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("SELECT * FROM mpa");
-        while (mpaRows.next()) {
-            Mpa mpa = new Mpa(mpaRows.getLong("id"), mpaRows.getString("name"));
-            mpas.add(mpa);
-        }
+        log.info("Поиск всех MPA");
+        final String query = "SELECT * FROM mpa";
+        Collection<Mpa> mpas = jdbcTemplate.query(
+                query, new MpaRowMapper());
+        log.info("Текущее количество MPA: {}", mpas.size());
         return mpas;
     }
 
     public Optional<Mpa> getMpa(Long id) {
-        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("SELECT name FROM mpa WHERE id = ?", id);
-        if (mpaRows.next()) {
-            return Optional.of(new Mpa(id, mpaRows.getString("name")));
-        }
-        return Optional.empty();
+        log.info("Поиск MPA по id " + id);
+        final String query = "SELECT * FROM mpa WHERE id = ?";
+        Mpa mpa = jdbcTemplate.queryForObject(
+                query, new Object[] { id }, new MpaRowMapper());
+        return mpa != null ? Optional.of(mpa) : Optional.empty();
     }
-
 }
