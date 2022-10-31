@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.User;
 import ru.yandex.filmorate.service.UserService;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Validated
@@ -65,8 +65,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
-        return userStorage.getUser(id);
+    public User getUserById(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
+        if (userStorage.getUser(id).isPresent()) {
+            return userStorage.getUser(id).get();
+        }
+        log.info("Пользователь с идентификатором {} не найден.", id);
+        throw new NotFoundException("Пользователь с id = " + id + " не найден!");
     }
 
     @GetMapping("/{id}/friends")

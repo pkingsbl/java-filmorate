@@ -15,7 +15,6 @@ import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Validated
@@ -60,8 +59,6 @@ public class FilmController {
         }
         log.info("Фильм с идентификатором {} не найден.", id);
         throw new NotFoundException("Фильм с id = " + id + " не найден!");
-
-
     }
 
     @GetMapping("/popular")

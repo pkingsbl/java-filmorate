@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.model.Mpa;
 import java.util.*;
 
@@ -30,9 +29,8 @@ public class MpaDbStorage {
         SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("SELECT name FROM mpa WHERE id = ?", id);
         if (mpaRows.next()) {
             return Optional.of(new Mpa(id, mpaRows.getString("name")));
-        } else {
-            throw new NotFoundException("Рейтинг с id = " + id + " не найден!");
         }
+        return Optional.empty();
     }
 
 }

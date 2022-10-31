@@ -24,10 +24,10 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public Optional<User> getUser(Long id) {
-        if (!users.containsKey(id)) {
-            throw new NotFoundException("Пользователь с id = " + id + " не найден!");
+        if (users.containsKey(id)) {
+            return Optional.ofNullable(users.get(id));
         }
-        return Optional.ofNullable(users.get(id));
+        return Optional.empty();
     }
 
     @Override

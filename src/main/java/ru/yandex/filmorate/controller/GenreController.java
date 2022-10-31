@@ -11,7 +11,6 @@ import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.model.Genre;
 import ru.yandex.filmorate.storage.GenreDbStorage;
 import java.util.Collection;
-import java.util.Optional;
 
 @Slf4j
 @Validated
@@ -34,7 +33,6 @@ public class GenreController {
         }
         log.info("Жанр с идентификатором {} не найден.", id);
         throw new NotFoundException("Жанр с id = " + id + " не найден!");
-
     }
 
 }

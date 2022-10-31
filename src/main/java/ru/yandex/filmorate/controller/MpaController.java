@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.model.Mpa;
 import ru.yandex.filmorate.storage.MpaDbStorage;
 import java.util.Collection;
-import java.util.Optional;
 
 @Slf4j
 @Validated
@@ -24,10 +24,13 @@ public class MpaController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Mpa> getMpaById(@PathVariable Long id) {
-        return mpaDbStorage.getMpa(id);
+    public Mpa getMpaById(@PathVariable Long id) {
+        if (mpaDbStorage.getMpa(id).isPresent()) {
+            return mpaDbStorage.getMpa(id).get();
+        }
+        log.info("MPA с идентификатором {} не найден.", id);
+        throw new NotFoundException("MPA с id = " + id + " не найден!");
     }
-
 
 }
 

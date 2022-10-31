@@ -56,10 +56,8 @@ public class UserDbStorage implements UserStorage {
             }
             log.info("Найден пользователь: {}", user.getLogin());
             return Optional.of(user);
-        } else {
-            log.info("Пользователь с идентификатором {} не найден.", id);
-            throw new NotFoundException("Пользователь с id = " + id + " не найден!");
         }
+        return Optional.empty();
     }
 
     @Override
