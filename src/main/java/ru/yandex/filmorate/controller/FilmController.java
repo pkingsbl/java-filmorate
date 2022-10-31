@@ -50,13 +50,18 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> findAll() {
-        log.info("Текущее количество фильмов: {}", filmStorage.getFilms().size());
-        return new ArrayList<>(filmStorage.getFilms().values());
+        return filmStorage.getFilms();
     }
 
     @GetMapping("/{id}")
-    public Optional<Film> getFilmById(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
-        return filmStorage.getFilm(id);
+    public Film getFilmById(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
+        if (filmStorage.getFilm(id).isPresent()){
+            return filmStorage.getFilm(id).get();
+        } else {
+            log.info("Фильм с идентификатором {} не найден.", id);
+            throw new NotFoundException("Фильм с id = " + id + " не найден!");
+        }
+
     }
 
     @GetMapping("/popular")

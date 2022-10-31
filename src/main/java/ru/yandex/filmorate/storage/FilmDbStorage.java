@@ -132,9 +132,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Map<Long, Film> getFilms() {
+    public Collection<Film> getFilms() {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql);
-        return getFilmMap(filmRows);
+        Collection<Film> films = getFilmMap(filmRows).values();
+        log.info("Текущее количество фильмов: {}", films.size());
+
+        return films;
     }
 
     @Override
@@ -145,10 +148,8 @@ public class FilmDbStorage implements FilmStorage {
             Film film = getFilm(filmRows);
             log.info("Найден фильм: {}", film.getName());
             return Optional.of(film);
-        } else {
-            log.info("Фильм с идентификатором {} не найден.", id);
-            throw new NotFoundException("Фильм с id = " + id + " не найден!");
         }
+        return Optional.empty();
     }
 
     private Map<Long, Film> getFilmMap(SqlRowSet filmRows) {
@@ -234,14 +235,4 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
-
-//    private void setMpa(Film film, long id) {
-//        log.info(film.getMpa().toString() + " | " + id);
-//        Mpa mpa = new Mpa(id);
-//        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("SELECT name FROM MPA WHERE id = ?", id);
-//        if (mpaRows.next()) {
-//            mpa.setName(mpaRows.getString("name"));
-//        }
-//        film.setMpa(mpa);
-//    }
 }

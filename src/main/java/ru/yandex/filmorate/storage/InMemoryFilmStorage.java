@@ -22,7 +22,7 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     private final Map<Long, Film> films = new HashMap<>();
 
-    public Map<Long, Film> getFilms() {
+    public Collection<Film> getFilms() {
         return films;
     }
 
