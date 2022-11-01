@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.User;
 import ru.yandex.filmorate.service.UserService;
@@ -65,11 +64,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
-        if (userStorage.getUser(id).isPresent()) {
-            return userStorage.getUser(id).get();
-        }
-        log.info("Пользователь с идентификатором {} не найден.", id);
-        throw new NotFoundException("Пользователь с id = " + id + " не найден!");
+        return userStorage.getUser(id).get();
     }
 
     @GetMapping("/{id}/friends")

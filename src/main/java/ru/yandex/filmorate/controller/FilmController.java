@@ -54,11 +54,7 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
-        if (filmStorage.getFilm(id).isPresent()){
-            return filmStorage.getFilm(id).get();
-        }
-        log.info("Фильм с идентификатором {} не найден.", id);
-        throw new NotFoundException("Фильм с id = " + id + " не найден!");
+        return filmStorage.getFilm(id).get();
     }
 
     @GetMapping("/popular")

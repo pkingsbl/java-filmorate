@@ -7,11 +7,8 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
-import ru.yandex.filmorate.model.Genre;
 import ru.yandex.filmorate.model.User;
-import ru.yandex.filmorate.storage.rowMapper.GenreRowMapper;
 import ru.yandex.filmorate.storage.rowMapper.UserRowMapper;
-
 import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
@@ -49,7 +46,7 @@ public class UserDbStorage implements UserStorage {
         final String query = "select * from users where id = ?";
         User user = jdbcTemplate.queryForObject(
                 query, new Object[] { id }, new UserRowMapper());
-            return user != null ? Optional.of(user) : Optional.empty();
+        return user != null ? Optional.of(user) : Optional.empty();
     }
 
     @Override
@@ -80,35 +77,6 @@ public class UserDbStorage implements UserStorage {
         log.info("У пользователей id: {} и id: {}, количество общих друзей: {}", id, otherId, friends.size());
         return friends;
     }
-//    @Override
-//    public List<User> getMutualFriends(Long id, Long otherId) {
-//        final String sql = "SELECT * FROM users WHERE id IN (SELECT friend_id " +
-//                "FROM friends WHERE user_id = " + id + ") " +
-//                "AND id IN (SELECT friend_id FROM friends where user_id = " + otherId + ")";
-//
-//        List<User> friends = new ArrayList<>();
-//        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
-//        while (userRows.next()) {
-//            User user = new User(userRows.getLong("id")
-//                    , userRows.getString("email")
-//                    , userRows.getString("login")
-//                    , userRows.getString("name")
-//                    , Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-//            friends.add(user);
-//        }
-//        return friends;
-//    }
-
-    @Override
-    public void deleteUser(Long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", id);
-        if (!userRows.next()) {
-            throw new NotFoundException("Пользователь с id = " + id + " не найден!");
-        }
-        jdbcTemplate.update("DELETE FROM friends WHERE user_id = ?", id);
-        jdbcTemplate.update("DELETE FROM friends WHERE friend_id = ?", id);
-        jdbcTemplate.update("DELETE FROM users WHERE id = ?", id);
-    }
 
     @Override
     public User updateUser(User user) throws IOException {
@@ -132,6 +100,17 @@ public class UserDbStorage implements UserStorage {
             throw new NotFoundException("Пользователь не найден!");
         }
         jdbcTemplate.update("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)", id, friendId);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", id);
+        if (!userRows.next()) {
+            throw new NotFoundException("Пользователь с id = " + id + " не найден!");
+        }
+        jdbcTemplate.update("DELETE FROM friends WHERE user_id = ?", id);
+        jdbcTemplate.update("DELETE FROM friends WHERE friend_id = ?", id);
+        jdbcTemplate.update("DELETE FROM users WHERE id = ?", id);
     }
 
     @Override
