@@ -7,12 +7,15 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
+import ru.yandex.filmorate.model.Genre;
 import ru.yandex.filmorate.model.User;
+import ru.yandex.filmorate.storage.rowMapper.GenreRowMapper;
 import ru.yandex.filmorate.storage.rowMapper.UserRowMapper;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,37 +43,31 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
-//    @Override
-//    public Optional<User> getUser(Long id) {
-//        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from users where id = ?", id);
-//
-//        if(userRows.next()) {
-//            User user = new User(
-//                    userRows.getLong("id"),
-//                    userRows.getString("email"),
-//                    userRows.getString("login"),
-//                    userRows.getString("name"),
-//                    Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-//            String sql = "SELECT f.friend_id FROM friends AS f WHERE f.user_id = ? AND f.APPROVE = true";
-//            SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(sql, id);
-//            while (friendsRows.next()) {
-//                user.getFriends().add(friendsRows.getLong("friend_id"));
-//            }
-//            log.info("Найден пользователь: {}", user.getLogin());
-//            return Optional.of(user);
-//        }
-//        return Optional.empty();
-//    }
-
     @Override
     public Optional<User> getUser(Long id) {
+        log.info("Поиск пользователя по id " + id);
         final String query = "select * from users where id = ?";
         User user = jdbcTemplate.queryForObject(
                 query, new Object[] { id }, new UserRowMapper());
-        if (user != null) {
-            return Optional.of(user);
-        }
-        return Optional.empty();
+            return user != null ? Optional.of(user) : Optional.empty();
+    }
+
+    @Override
+    public Map<Long, User> getUsers() {
+        log.info("Поиск всех пользоватей");
+        final String query = "SELECT * FROM users";
+        Collection<User> users = jdbcTemplate.query(query, new UserRowMapper());
+        Map<Long, User>  userMap = users.stream().collect(Collectors.toMap(User::getId, user -> user));
+        log.info("Текущее количество пользоватей: {}", userMap.size());
+        return userMap;
+    }
+
+    @Override
+    public List<User> findFriends(Long id) {
+        final String query = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM friends WHERE user_id = ?)";
+        List<User> friends = jdbcTemplate.query(query, new Object[] { id }, new UserRowMapper());
+        log.info("У пользователя id: {}, количество друзей: {}", id, friends.size());
+        return friends;
     }
 
     @Override
@@ -97,19 +94,22 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Map<Long, User> getUsers() {
-        Map<Long, User>  users = new HashMap<>();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users");
+    public List<User> getMutualFriends(Long id, Long otherId) {
+        final String sql = "SELECT * FROM users WHERE id IN (SELECT friend_id " +
+                "FROM friends WHERE user_id = " + id + ") " +
+                "AND id IN (SELECT friend_id FROM friends where user_id = " + otherId + ")";
+
+        List<User> friends = new ArrayList<>();
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
         while (userRows.next()) {
             User user = new User(userRows.getLong("id")
                     , userRows.getString("email")
                     , userRows.getString("login")
                     , userRows.getString("name")
                     , Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-            users.put(userRows.getLong("id"), user);
+            friends.add(user);
         }
-        log.info("Текущее количество пользователей: {}", users.size());
-        return users;
+        return friends;
     }
 
     @Override
@@ -127,44 +127,5 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void deleteFriend(Long id, Long friendId) {
         jdbcTemplate.update("DELETE FROM friends WHERE user_id = ? AND friend_id = ?", id, friendId);
-    }
-
-    @Override
-    public List<User> findFriends(Long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", id);
-        if (!userRows.next()) {
-            throw new NotFoundException("Пользователь не найден!");
-        }
-        final String sql = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM friends WHERE user_id = ?)";
-        List<User> friends = new ArrayList<>();
-        userRows = jdbcTemplate.queryForRowSet(sql, id);
-        while (userRows.next()) {
-            User user = new User(userRows.getLong("id")
-                    , userRows.getString("email")
-                    , userRows.getString("login")
-                    , userRows.getString("name")
-                    , Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-            friends.add(user);
-        }
-        return friends;
-    }
-
-    @Override
-    public List<User> getMutualFriends(Long id, Long otherId) {
-        final String sql = "SELECT * FROM users WHERE id IN (SELECT friend_id " +
-                "FROM friends WHERE user_id = " + id + ") " +
-                "AND id IN (SELECT friend_id FROM friends where user_id = " + otherId + ")";
-
-        List<User> friends = new ArrayList<>();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
-        while (userRows.next()) {
-            User user = new User(userRows.getLong("id")
-                    , userRows.getString("email")
-                    , userRows.getString("login")
-                    , userRows.getString("name")
-                    , Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-            friends.add(user);
-        }
-        return friends;
     }
 }

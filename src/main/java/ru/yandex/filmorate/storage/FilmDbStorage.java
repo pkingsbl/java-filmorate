@@ -10,6 +10,8 @@ import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.Film;
 import ru.yandex.filmorate.model.Genre;
 import ru.yandex.filmorate.model.Mpa;
+import ru.yandex.filmorate.storage.rowMapper.FilmRowMapper;
+
 import java.time.LocalDate;
 import java.sql.Date;
 import java.util.*;
@@ -20,6 +22,8 @@ import java.util.*;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
+
+    String queryFilm = "SELECT f.id, f.name, f.description, f.release_date, f.duration FROM films AS f WHERE id = ?";
 
     String sql = "SELECT " +
             "f.id, f.name, f.description, f.release_date, f.duration, mpa.id, mpa.name, l.user_id , fg.genre_id " +
@@ -139,17 +143,24 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
-    @Override
-    public Optional<Film> getFilm(Long id) {
-        log.info("Поиск фильма по id " + id);
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql + " WHERE f.id = ?", id);
-        if(filmRows.next()) {
-            Film film = getFilm(filmRows);
-            log.info("Найден фильм: {}", film.getName());
-            return Optional.of(film);
-        }
-        return Optional.empty();
-    }
+//    @Override
+//    public Optional<Film> getFilm(Long id) {
+//        log.info("Поиск фильма по id " + id);
+//        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql + " WHERE f.id = ?", id);
+//        if(filmRows.next()) {
+//            Film film = getFilm(filmRows);
+//            log.info("Найден фильм: {}", film.getName());
+//            return Optional.of(film);
+//        }
+//        return Optional.empty();
+//    }
+@Override
+public Optional<Film> getFilm(Long id) {
+    log.info("Поиск фильма по id " + id);
+    Film film = jdbcTemplate.queryForObject(
+            queryFilm, new Object[] { id }, new FilmRowMapper());
+    return film != null ? Optional.of(film) : Optional.empty();
+}
 
     private Map<Long, Film> getFilmMap(SqlRowSet filmRows) {
         Map<Long, Film> films = new HashMap<>();

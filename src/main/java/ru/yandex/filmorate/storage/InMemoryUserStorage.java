@@ -8,6 +8,7 @@ import ru.yandex.filmorate.exception.ValidationException;
 import ru.yandex.filmorate.model.User;
 import ru.yandex.filmorate.service.UserService;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -42,10 +43,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public List<User> findFriends(Long id) {
-        List<User> friends = new ArrayList<>();
-        for (Long friendId : users.get(id).getFriends()) {
-            friends.add(users.get(friendId));
-        }
+        List<User> friends = users.get(id).getFriends().stream().map(users::get).collect(Collectors.toList());
         return friends;
     }
 
