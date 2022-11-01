@@ -66,9 +66,38 @@ public class UserDbStorage implements UserStorage {
     public List<User> findFriends(Long id) {
         final String query = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM friends WHERE user_id = ?)";
         List<User> friends = jdbcTemplate.query(query, new Object[] { id }, new UserRowMapper());
-        log.info("У пользователя id: {}, количество друзей: {}", id, friends.size());
+        log.info("У пользователя id: {}, количество исходящих заявок в друзья: {}", id, friends.size());
         return friends;
     }
+
+    @Override
+    public List<User> getMutualFriends(Long id, Long otherId) {
+        final String query = "SELECT * FROM users WHERE id IN (SELECT friend_id " +
+                "FROM friends WHERE user_id = " + id + ") " +
+                "AND id IN (SELECT friend_id FROM friends where user_id = " + otherId + ")";
+
+        List<User> friends = jdbcTemplate.query(query, new UserRowMapper());
+        log.info("У пользователей id: {} и id: {}, количество общих друзей: {}", id, otherId, friends.size());
+        return friends;
+    }
+//    @Override
+//    public List<User> getMutualFriends(Long id, Long otherId) {
+//        final String sql = "SELECT * FROM users WHERE id IN (SELECT friend_id " +
+//                "FROM friends WHERE user_id = " + id + ") " +
+//                "AND id IN (SELECT friend_id FROM friends where user_id = " + otherId + ")";
+//
+//        List<User> friends = new ArrayList<>();
+//        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
+//        while (userRows.next()) {
+//            User user = new User(userRows.getLong("id")
+//                    , userRows.getString("email")
+//                    , userRows.getString("login")
+//                    , userRows.getString("name")
+//                    , Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
+//            friends.add(user);
+//        }
+//        return friends;
+//    }
 
     @Override
     public void deleteUser(Long id) {
@@ -91,25 +120,6 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update("UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?"
                 , user.getEmail(), user.getLogin(), user.getName(), Date.valueOf(user.getBirthday()), user.getId());
         return user;
-    }
-
-    @Override
-    public List<User> getMutualFriends(Long id, Long otherId) {
-        final String sql = "SELECT * FROM users WHERE id IN (SELECT friend_id " +
-                "FROM friends WHERE user_id = " + id + ") " +
-                "AND id IN (SELECT friend_id FROM friends where user_id = " + otherId + ")";
-
-        List<User> friends = new ArrayList<>();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
-        while (userRows.next()) {
-            User user = new User(userRows.getLong("id")
-                    , userRows.getString("email")
-                    , userRows.getString("login")
-                    , userRows.getString("name")
-                    , Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-            friends.add(user);
-        }
-        return friends;
     }
 
     @Override
