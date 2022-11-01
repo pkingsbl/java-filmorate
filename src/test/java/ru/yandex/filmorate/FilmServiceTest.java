@@ -55,7 +55,7 @@ class FilmServiceTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
 
-        this.mockMvc.perform(put("/films/1/like/1"))
+        this.mockMvc.perform(put("/films/2/like/2"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -80,10 +80,10 @@ class FilmServiceTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
 
-        this.mockMvc.perform(put("/films/1/like/1"))
+        this.mockMvc.perform(put("/films/2/like/2"))
                 .andDo(print())
                 .andExpect(status().isOk());
-        this.mockMvc.perform(delete("/films/1/like/1"))
+        this.mockMvc.perform(delete("/films/2/like/2"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -101,7 +101,7 @@ class FilmServiceTest {
                     .andExpect(status().isOk());
         }
 
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i < 9; i++) {
             Film film = new Film(("Фиьмс-" + i)
                     , "Это совершенно обыкновенный фильм с купленным рейтингом"
                     , LocalDate.of((2000 + i), 12, 1), 10);
@@ -112,7 +112,7 @@ class FilmServiceTest {
                             .contentType("application/json"))
                     .andExpect(status().isOk());
 
-            for (int j = 1; j < (new Random().nextInt(19) + 2); j++) {
+            for (int j = 2; j < (new Random().nextInt(19) + 2); j++) {
                 this.mockMvc.perform(put(String.format("/films/%d/like/%d", i, j)))
                         .andDo(print())
                         .andExpect(status().isOk());

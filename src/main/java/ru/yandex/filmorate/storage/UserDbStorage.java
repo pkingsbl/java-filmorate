@@ -61,6 +61,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findFriends(Long id) {
+        log.info("Поиск друзей пользователя id: {}", id);
         final String query = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM friends WHERE user_id = ?)";
         List<User> friends = jdbcTemplate.query(query, new Object[] { id }, new UserRowMapper());
         log.info("У пользователя id: {}, количество исходящих заявок в друзья: {}", id, friends.size());
