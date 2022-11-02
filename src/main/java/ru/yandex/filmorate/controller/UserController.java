@@ -3,6 +3,7 @@ package ru.yandex.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.filmorate.exception.ValidationException;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
+    @Qualifier("UserDbStorage")
     @Autowired
     private UserStorage userStorage;
     @Autowired
@@ -39,42 +41,41 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id,
+    public void addFriend(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id,
             @PathVariable Long friendId) {
-        return userService.addFriend(id, friendId);
+        userStorage.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriend(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id,
+    public void deleteFriend(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id,
             @PathVariable @Min(value = 1, message = "id должен быть больше 0") Long friendId) {
-        return userService.deleteFriend(id, friendId);
+        userStorage.deleteFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}")
-    public User deleteUser(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
-        return userStorage.deleteUser(id);
+    public void deleteUser(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
+        userStorage.deleteUser(id);
     }
 
     @GetMapping
     public Collection<User> findAll() {
-        log.info("Текущее количество пользователей: {}", userStorage.getUsers().size());
         return new ArrayList<>(userStorage.getUsers().values());
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
-        return userStorage.getUser(id);
+        return userStorage.getUser(id).get();
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getUserFriends(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id) {
-        return new ArrayList<>(userService.findFriends(userStorage.getUsers().get(id).getFriends()));
+        return userStorage.findFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> findCommonFriends(@PathVariable @Min(value = 1, message = "id должен быть больше 0") Long id,
             @PathVariable @Min(value = 1, message = "user id должен быть больше 0") Long otherId)  {
-        return new ArrayList<>(userService.getMutualFriends(id, otherId));
+        return userStorage.getMutualFriends(id, otherId);
     }
 
 }

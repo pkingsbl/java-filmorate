@@ -2,6 +2,7 @@ package ru.yandex.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.filmorate.exception.NotFoundException;
 import ru.yandex.filmorate.exception.ValidationException;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Service
 public class UserService {
 
+    @Qualifier("UserDbStorage")
     @Autowired
     private UserStorage userStorage;
 

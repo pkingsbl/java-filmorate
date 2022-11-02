@@ -2,6 +2,7 @@ package ru.yandex.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.filmorate.exception.NotFoundException;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
+    @Qualifier("FilmDbStorage")
     @Autowired
     private FilmStorage filmStorage;
     @Autowired
@@ -28,6 +30,9 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
+        if (film.getMpa() == null) {
+            throw new ValidationException("MPA не должен быть null");
+        }
         return filmStorage.addFilm(film);
     }
 
@@ -39,18 +44,17 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id
             , @PathVariable @Min(value = 1, message = "user id должен быть больше 0") Long userId) {
-        return filmService.addLike(userId, id);
+        return filmService.addLike(id, userId);
     }
 
     @GetMapping
     public Collection<Film> findAll() {
-        log.info("Текущее количество фильмов: {}", filmStorage.getFilms().size());
-        return new ArrayList<>(filmStorage.getFilms().values());
+        return filmStorage.getFilms().values();
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
-        return filmStorage.getFilm(id);
+        return filmStorage.getFilm(id).get();
     }
 
     @GetMapping("/popular")
@@ -60,8 +64,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}")
-    public Film deleteFilm(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
-        return filmStorage.deleteFilm(id);
+    public void deleteFilm(@PathVariable @Min(value = 1, message = "film id должен быть больше 0") Long id) {
+        filmStorage.deleteFilm(id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")

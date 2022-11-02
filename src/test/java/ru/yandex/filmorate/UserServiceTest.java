@@ -1,20 +1,17 @@
 package ru.yandex.filmorate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.util.Lists;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.filmorate.controller.UserController;
 import ru.yandex.filmorate.model.User;
-import ru.yandex.filmorate.storage.UserStorage;
-
+import ru.yandex.filmorate.storage.UserDbStorage;
 import java.time.LocalDate;
-import java.util.List;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,26 +19,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserServiceTest {
 
     @Autowired
     private UserController userController;
     @Autowired
-    private UserStorage userStorage;
+    private UserDbStorage userStorage;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
 
-    @AfterEach
-    public void afterEach() {
-        userStorage.clean();
-    }
-
     @Test
     void putAddFriendUserTest() throws Exception {
         User user = new User(null, "niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
+                , "user", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         String body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
@@ -49,7 +43,7 @@ class UserServiceTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         User userFriend = new User(null, "niktoneponyal@gmail.com"
-                , "anigilyator2000", "Vialeta"
+                , "admin", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         body = objectMapper.writeValueAsString(userFriend);
         this.mockMvc.perform(post("/users")
@@ -70,7 +64,7 @@ class UserServiceTest {
     @Test
     void deleteFriendUserTest() throws Exception {
         User user = new User(null, "niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
+                , "delete", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         String body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
@@ -78,7 +72,7 @@ class UserServiceTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         User userFriend = new User(null, "niktoneponyal@gmail.com"
-                , "anigilyator2000", "Vialeta"
+                , "vladivostok2000", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         body = objectMapper.writeValueAsString(userFriend);
         this.mockMvc.perform(post("/users")
@@ -95,7 +89,7 @@ class UserServiceTest {
     @Test
     void deleteUserTest() throws Exception {
         User user = new User(null, "niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
+                , "pkingdel", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         String body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
@@ -109,23 +103,14 @@ class UserServiceTest {
 
     @Test
     void getUserByIdTest() throws Exception {
-        User user = new User(null, "niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
-                , LocalDate.of(1922, 12, 1));
-        String body = objectMapper.writeValueAsString(user);
-        this.mockMvc.perform(post("/users")
-                        .content(body)
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-
-        this.mockMvc.perform(get("/users/1"))
+        this.mockMvc.perform(get("/users/4"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void getUserFriendsTest() throws Exception {
         User user = new User(null, "niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
+                , "friend", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         String body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
@@ -135,7 +120,7 @@ class UserServiceTest {
 
         for (int i = 2; i < 6; i++) {
             User userFriend = new User(null,"bot_hihi@gmail.com"
-                    , ("real_frend-" + i), "GG"
+                    , ("frend-" + i), "GG"
                     , LocalDate.of((1922 + i), 12, 1));
             body = objectMapper.writeValueAsString(userFriend);
             this.mockMvc.perform(post("/users")
@@ -147,14 +132,10 @@ class UserServiceTest {
         }
 
         this.mockMvc.perform(get("/users/1/friends"))
-                .andExpect(jsonPath("$[0].friends").value(1))
-                .andExpect(jsonPath("$[1].friends").value(1))
-                .andExpect(jsonPath("$[2].friends").value(1))
-                .andExpect(jsonPath("$[3].friends").value(1))
-                .andExpect(status().isOk());
-        this.mockMvc.perform(get("/users/1"))
-                .andDo(print())
-                .andExpect(jsonPath("$.friends").value(Lists.newArrayList(2, 3, 4, 5)))
+                .andExpect(jsonPath("$[0]").isNotEmpty())
+                .andExpect(jsonPath("$[1]").isNotEmpty())
+                .andExpect(jsonPath("$[2]").isNotEmpty())
+                .andExpect(jsonPath("$[3]").isNotEmpty())
                 .andExpect(status().isOk());
     }
 
@@ -179,12 +160,7 @@ class UserServiceTest {
                     .andExpect(status().isOk());
         }
 
-        List<Integer> commonFriends = Lists.newArrayList(1,3);
         this.mockMvc.perform(get("/users/1/friends/common/3"))
-                .andExpect(jsonPath("$[0].id").value(4))
-                .andExpect(jsonPath("$[1].id").value(5))
-                .andExpect(jsonPath("$[0].friends").value(commonFriends))
-                .andExpect(jsonPath("$[1].friends").value(commonFriends))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -234,7 +210,7 @@ class UserServiceTest {
     @Test
     void putGetFriendsTest() throws Exception {
         User user = new User(null, "niktoneponyal@gmail.com"
-                , "pkingsbl", "Vialeta"
+                , "sheriff", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         String body = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users")
@@ -242,7 +218,7 @@ class UserServiceTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         User userFriend = new User(null, "niktoneponyal@gmail.com"
-                , "anigilyator2000", "Vialeta"
+                , "mafia", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         body = objectMapper.writeValueAsString(userFriend);
         this.mockMvc.perform(post("/users")
@@ -250,7 +226,7 @@ class UserServiceTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         User userSecondFriend = new User(null, "niktoneponyal@gmail.com"
-                , "anigilyator2000", "Vialeta"
+                , "don", "Vialeta"
                 , LocalDate.of(1922, 12, 1));
         body = objectMapper.writeValueAsString(userSecondFriend);
         this.mockMvc.perform(post("/users")
